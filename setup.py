@@ -44,8 +44,8 @@ setup(
         "onnxruntime",
         "onnxruntime-gpu",
         "onnx2pytorch",
-        "SoundFile==0.11; sys_platform != 'darwin'",
-        "PySoundFile==0.9.post1; sys_platform == 'darwin'",
+        "SoundFile",
+        # "PySoundFile.post1; sys_platform == 'darwin'",
         "numpy",
     ],
     # 其他元数据
