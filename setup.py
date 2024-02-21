@@ -39,7 +39,7 @@ setup(
         "samplerate",
         "screeninfo",
         "diffq",
-        "playsound",
+        # "playsound",
         "onnx",
         "onnxruntime",
         "onnxruntime-gpu",
