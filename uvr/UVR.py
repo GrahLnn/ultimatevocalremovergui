@@ -15,15 +15,74 @@ import psutil
 import queue
 
 import subprocess
-
+from .main_window import MainWindow
 
 from tkinter import messagebox
 from collections import Counter
 from uvr.__version__ import VERSION, PATCH, PATCH_MAC, PATCH_LINUX
 
 from datetime import datetime
-from .gui_data.constants import *
-from .gui_data.app_size_values import *
+
+from .gui_data.constants import (
+    OPERATING_SYSTEM,
+    MAC_DND_CHECK,
+    LINUX_DND_CHECK,
+    WINDOWS_DND_CHECK,
+    DEFAULT_DATA,
+    VR_MODEL_DATA_LINK,
+    MDX_MODEL_DATA_LINK,
+    MDX_MODEL_NAME_DATA_LINK,
+    DEMUCS_MODEL_NAME_DATA_LINK,
+    FILE_1,
+    FILE_2,
+    FILE_1_LB,
+    FILE_2_LB,
+    ENSEMBLE_MODE,
+    DEVERB_MAPPER,
+    DENOISE_M,
+    DENOISE_NONE,
+    DEF_OPT,
+    DEFAULT,
+    CHOOSE_MODEL,
+    NO_MODEL,
+    INST_STEM_ONLY,
+    IS_SAVE_VOC_ONLY,
+    ENSEMBLE_PARTITION,
+    FOUR_STEM_ENSEMBLE,
+    MULTI_STEM_ENSEMBLE,
+    VOCAL_STEM,
+    VR_ARCH_TYPE,
+    WOOD_INST_MODEL_HASH,
+    WOOD_INST_PARAMS,
+    MDX_ARCH_TYPE,
+    DEMUCS_ARCH_TYPE,
+    AUTO_SELECT,
+    INST_STEM,
+    ALL_STEMS,
+    DEMUCS_4_SOURCE_LIST,
+    BV_VOCAL_STEM,
+    LEAD_VOCAL_STEM,
+    IS_KARAOKEE,
+    IS_BV_MODEL,
+    IS_BV_MODEL_REBAL,
+    CKPT,
+    ONNX,
+    DEMUCS_V3,
+    DEMUCS_V4,
+    DEMUCS_VERSION_MAPPER,
+    DEMUCS_UVR_MODEL,
+    DEMUCS_2_SOURCE,
+    DEMUCS_2_SOURCE_MAPPER,
+    DEMUCS_4_SOURCE,
+    DEMUCS_4_SOURCE_MAPPER,
+    PRIMARY_STEM,
+    UNRECOGNIZED_MODEL,
+    INVALID_FOLDER_ERROR_TEXT,
+    secondary_stem,
+)
+
+# from .gui_data.constants import *
+# from .gui_data.app_size_values import *
 
 from .gui_data.old_data_check import file_check, remove_unneeded_yamls, remove_temps
 
@@ -119,30 +178,6 @@ if not is_windows:
     ssl._create_default_https_context = ssl._create_unverified_context
 else:
     from ctypes import windll, wintypes
-
-
-def close_process(q: queue.Queue):
-    def close_splash():
-        name = "UVR_Launcher.exe"
-        for process in psutil.process_iter(attrs=["name"]):
-            process_name = process.info.get("name")
-
-            if process_name == name:
-                try:
-                    process.terminate()
-                    q.put(f"{name} terminated.")  # Push message to queue
-                    break
-                except psutil.NoSuchProcess as e:
-                    q.put(f"Error terminating {name}: {e}")  # Push error to queue
-
-                    try:
-                        with open(SPLASH_DOC, "w") as f:
-                            f.write("1")
-                    except:
-                        print("No splash screen.")
-
-    thread = KThread(target=close_splash)
-    thread.start()
 
 
 def save_data(data):
@@ -605,9 +640,7 @@ class ModelData:
                         )
                         if os.path.isfile(config_path):
                             with open(config_path) as f:
-                                config = ConfigDict(
-                                    yaml.load(f, Loader=yaml.FullLoader)
-                                )
+                                config = yaml.load(f, Loader=yaml.FullLoader)
 
                             self.mdx_c_configs = config
 
@@ -924,7 +957,7 @@ class ModelData:
                     with open(self.model_path, "rb") as f:
                         f.seek(-10000 * 1024, 2)
                         self.model_hash = hashlib.md5(f.read()).hexdigest()
-                except:
+                except Exception:
                     self.model_hash = hashlib.md5(
                         open(self.model_path, "rb").read()
                     ).hexdigest()
@@ -933,3 +966,23 @@ class ModelData:
                 model_hash_table.update(table_entry)
 
         # print(self.model_name," - ", self.model_hash)
+
+
+# root = MainWindow()
+if __name__ == "__main__":
+
+    try:
+        windll.user32.SetThreadDpiAwarenessContext(wintypes.HANDLE(-1))
+    except Exception as e:
+        if OPERATING_SYSTEM == "Windows":
+            print(e)
+
+    root = MainWindow()
+    # root.update_checkbox_text()
+    # root.is_root_defined_var.set(True)
+    # root.is_check_splash = True
+
+    # root.update() if is_windows else root.update_idletasks()
+    # root.deiconify()
+    # root.configure(bg=BG_COLOR)
+    # root.mainloop()
