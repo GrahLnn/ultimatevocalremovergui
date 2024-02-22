@@ -1,4 +1,4 @@
-import pickle
+# import pickle
 from dataclasses import dataclass
 
 from .separate import SeperateMDXC
@@ -116,11 +116,11 @@ class ModelData:
 # os.chdir("c:\\Users\\yvliu\\ultimatevocalremovergui")
 # print(os.getcwd())
 
-with open("./my_object.pkl", "rb") as f:
-    process_data = pickle.load(f)
+# with open("./my_object.pkl", "rb") as f:
+#     process_data = pickle.load(f)
 
 
-current_model: ModelData = process_data["model_data"]
+# current_model: ModelData = process_data["model_data"]
 # print(dir(current_model))
 # print(current_model.__dict__)
 # current_model.model_path = r"C:\Users\yvliu\AppData\Local\Programs\Ultimate Vocal Remover\models\MDX_Net_Models\MDX23C-8KFFT-InstVoc_HQ.ckpt"
@@ -131,12 +131,21 @@ current_model: ModelData = process_data["model_data"]
 # https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/MDX23C-8KFFT-InstVoc_HQ_2.ckpt
 
 
-def infer(audio, output_path, model_path):
+def infer(
+    audio,
+    output_path,
+    mdx23c_model_path,
+    denoise_model_path,
+    deEcho_model_path,
+    process_data,
+):
     ### only suport MDX23C-8KFFT-InstVoc_HQ
-    with open("./my_object.pkl", "rb") as f:
-        process_data = pickle.load(f)
+    # with open("./my_object.pkl", "rb") as f:
+    #     process_data = pickle.load(f)
     current_model: ModelData = process_data["model_data"]
-    current_model.model_path = model_path
+    current_model.model_path = mdx23c_model_path
+    current_model.DENOISER_MODEL = denoise_model_path
+    current_model.DEVERBER_MODEL = deEcho_model_path
     process_data["export_path"] = output_path
     process_data["audio_file"] = audio
     seperator = SeperateMDXC(current_model, process_data)
